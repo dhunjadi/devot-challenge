@@ -1,7 +1,9 @@
 .p-login {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 
   &__form {
     width: 33rem;
@@ -51,6 +53,30 @@
         font-weight: 700;
         padding: 1rem 0;
         border-radius: 0.1rem;
+      }
+    }
+  }
+
+  &__register {
+    width: 33rem;
+    background-color: $color-tertiary;
+    display: flex;
+    margin-top: 3rem;
+
+    &_text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-left: 3.5rem;
+
+      span {
+        font-size: 1.8rem;
+        color: $color-dark-text;
+      }
+
+      a {
+        color: $color-secondary;
+        font-size: 1.4rem;
       }
     }
   }

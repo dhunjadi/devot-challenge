@@ -2,6 +2,7 @@ import Header from '../../components/Header';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {LoginForm, loginPageValidationSchema} from './LoginPageValidations';
+import RegisterIcon from '../../assets/RegisterIcon.svg';
 
 const LoginPage = () => {
   const {
@@ -35,6 +36,15 @@ const LoginPage = () => {
               Login
             </button>
           </form>
+        </div>
+        <div className="p-login__register">
+          <div className="p-login__register_icon">
+            <img src={RegisterIcon} alt="dada" />
+          </div>
+          <div className="p-login__register_text">
+            <span>Need an account?</span>
+            <a href="/">Register here</a>
+          </div>
         </div>
       </div>
     </>
