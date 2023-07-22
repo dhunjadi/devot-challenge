@@ -1,4 +1,5 @@
 .p-login {
+  margin-top: 15rem;
   &__form {
     width: 40rem;
     background-color: $color-tertiary;
@@ -12,7 +13,7 @@
       input {
         border: none;
         background-color: white;
-        color: $color-input-text;
+        color: $color-dark-text;
         padding: 1.2rem 3rem;
 
         &:focus {

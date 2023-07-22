@@ -3,12 +3,14 @@
 
   &__title {
     font-size: 2.4rem;
+    margin-top: 8rem;
   }
 
   &__filter {
     margin-top: 5.3rem;
     padding: 2.2rem 5rem;
     background-color: $color-tertiary;
+    margin-bottom: 4.3rem;
 
     label {
       font-size: 1.4rem;
@@ -53,7 +55,7 @@
     font-size: 1.8rem;
 
     td {
-      color: $color-input-text;
+      color: $color-dark-text;
       padding: 2.2rem 0 !important;
     }
 
@@ -68,7 +70,7 @@
     }
   }
 
-  .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  .p-paginator .p-paginator-pages .p-paginator-element {
     font-size: 1.4rem;
     border-radius: 0.4rem;
   }

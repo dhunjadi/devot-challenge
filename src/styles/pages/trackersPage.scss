@@ -5,6 +5,7 @@
     gap: 1.6rem;
     font-size: 2.4rem;
     font-weight: 700;
+    margin-top: 8rem;
   }
 
   &__buttons {
@@ -19,7 +20,7 @@
     }
 
     td {
-      color: $color-input-text;
+      color: $color-dark-text;
       padding: 2.2rem 3rem !important;
     }
 
@@ -34,7 +35,7 @@
     }
   }
 
-  .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  .p-paginator .p-paginator-pages .p-paginator-element {
     font-size: 1.4rem;
     border-radius: 0.4rem;
   }

@@ -1,4 +1,3 @@
-import Header from '../components/Header';
 import PencilIconBlue from '../assets/PencilIconBlue.svg';
 import TrashIconBlue from '../assets/TrashIconBlue.svg';
 import {useState} from 'react';
@@ -6,6 +5,7 @@ import {Calendar, CalendarChangeEvent} from 'primereact/calendar';
 import {InputText} from 'primereact/inputtext';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
+import BaseLayout from '../layouts/BaseLayout';
 
 const TrackersHistoryPage = () => {
   const [startDate, setStartDate] = useState<string | Date | Date[] | null>();
@@ -31,9 +31,8 @@ const TrackersHistoryPage = () => {
   ];
 
   return (
-    <>
-      <Header showLinks />
-      <div className="p-trackersHistory flex flex-column justify-content-center h-screen">
+    <BaseLayout>
+      <div className="p-trackersHistory flex flex-column h-screen">
         <div className="p-trackersHistory__title w-full font-bold">Trackers History</div>
 
         <div className="p-trackersHistory__filter w-full flex justify-content-between gap-7">
@@ -79,7 +78,7 @@ const TrackersHistoryPage = () => {
           <Column field="actions" header="Actions" style={{width: '10%'}}></Column>
         </DataTable>
       </div>
-    </>
+    </BaseLayout>
   );
 };
 

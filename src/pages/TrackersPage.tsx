@@ -1,4 +1,3 @@
-import Header from '../components/Header';
 import CalendarIcon from '../assets/CalendarIcon.svg';
 import StopwatchIcon from '../assets/StopwatchIcon.svg';
 import StopIcon from '../assets/StopIcon.svg';
@@ -9,6 +8,7 @@ import PauseIconOrange from '../assets/PauseIconOrange.svg';
 import StopIconBlue from '../assets/StopIconBlue.svg';
 import PencilIconBlue from '../assets/PencilIconBlue.svg';
 import TrashIconBlue from '../assets/TrashIconBlue.svg';
+import BaseLayout from '../layouts/BaseLayout';
 
 const TrackersPage = () => {
   const actionButtons = (
@@ -34,24 +34,22 @@ const TrackersPage = () => {
     {timeLogged: '01:23:33', description: 'Task 123 Jira lorem ipsum dolor sit amet', actions: actionButtons},
     {timeLogged: '01:23:33', description: 'Task 123 Jira Lorem Ipsum is simply dummy text of the', actions: actionButtons},
     {timeLogged: '01:23:33', description: "Lorem Ipsum has been the industry's standard dummy text ever since", actions: actionButtons},
+    {timeLogged: '01:23:33', description: 'Task 123 Jira lorem ipsum dolor sit amet', actions: actionButtons},
+    {timeLogged: '01:23:33', description: 'Task 123 Jira Lorem Ipsum is simply dummy text of the', actions: actionButtons},
+    {timeLogged: '01:23:33', description: "Lorem Ipsum has been the industry's standard dummy text ever since", actions: actionButtons},
   ];
 
   return (
-    <>
-      <Header showLinks />
-      <div className="p-trackers flex flex-column justify-content-center h-screen">
+    <BaseLayout>
+      <div className="p-trackers flex flex-column  h-screen">
         <div className="p-trackers__date w-full flex align-items-center justify-content-start ">
           <img src={CalendarIcon} alt="calendar icon" />
           <span>Today {`(1.12.2021.)`}</span>
         </div>
 
         <div className="p-trackers__buttons w-100 flex justify-content-end gap-4">
-          <Button icon={StopwatchIcon} variant="primary">
-            Start new timer
-          </Button>
-          <Button icon={StopIcon} variant="secondary">
-            Stop all
-          </Button>
+          <Button icon={StopwatchIcon} label="Start new timer" variant="primary" />
+          <Button icon={StopIcon} label="Stop all" variant="secondary" />
         </div>
 
         <DataTable className="w-100" value={data} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
@@ -60,7 +58,7 @@ const TrackersPage = () => {
           <Column field="actions" header="Actions" style={{width: '20%'}}></Column>
         </DataTable>
       </div>
-    </>
+    </BaseLayout>
   );
 };
 
