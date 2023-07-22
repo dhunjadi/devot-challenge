@@ -1,35 +1,16 @@
 .p-login {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-
   &__form {
-    width: 33rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    width: 40rem;
     background-color: $color-tertiary;
     padding: 4.4rem 3.5rem 6rem 3.5rem;
 
     span {
-      font-weight: 700;
       font-size: 2.4rem;
-      margin-bottom: 5rem;
     }
 
     form {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-
       input {
-        width: 100%;
-        height: 100%;
         border: none;
-
         background-color: white;
         color: $color-input-text;
         padding: 1.2rem 3rem;
@@ -38,35 +19,34 @@
           outline: none;
           border: none;
         }
-      }
 
-      input:first-child {
-        margin-bottom: 3rem;
+        &:first-child {
+          margin-bottom: 3rem;
+        }
       }
 
       button {
-        margin-top: 5rem;
         background-color: $color-primary;
         color: white;
+        font-size: 1.4rem;
         border: none;
         font-size: 1.4rem;
-        font-weight: 700;
         padding: 1rem 0;
         border-radius: 0.1rem;
+        transition: all 0.3s;
+
+        &:disabled {
+          opacity: 0.5;
+        }
       }
     }
   }
 
   &__register {
-    width: 33rem;
+    width: 40rem;
     background-color: $color-tertiary;
-    display: flex;
-    margin-top: 3rem;
 
     &_text {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
       margin-left: 3.5rem;
 
       span {
@@ -75,7 +55,7 @@
       }
 
       a {
-        color: $color-secondary;
+        color: $color-primary;
         font-size: 1.4rem;
       }
     }

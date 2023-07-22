@@ -39,13 +39,13 @@ const TrackersPage = () => {
   return (
     <>
       <Header showLinks />
-      <div className="p-trackers">
-        <div className="p-trackers__date">
+      <div className="p-trackers flex flex-column justify-content-center h-screen">
+        <div className="p-trackers__date w-full flex align-items-center justify-content-start ">
           <img src={CalendarIcon} alt="calendar icon" />
           <span>Today {`(1.12.2021.)`}</span>
         </div>
 
-        <div className="p-trackers__buttons">
+        <div className="p-trackers__buttons w-100 flex justify-content-end gap-4">
           <Button icon={StopwatchIcon} variant="primary">
             Start new timer
           </Button>
@@ -54,7 +54,7 @@ const TrackersPage = () => {
           </Button>
         </div>
 
-        <DataTable value={data} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
+        <DataTable className="w-100" value={data} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
           <Column field="timeLogged" header="Time logged" style={{width: '20%'}}></Column>
           <Column field="description" header="Description" style={{width: '60%'}}></Column>
           <Column field="actions" header="Actions" style={{width: '20%'}}></Column>
