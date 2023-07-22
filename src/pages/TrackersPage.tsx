@@ -55,9 +55,9 @@ const TrackersPage = () => {
         </div>
 
         <DataTable value={data} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
-          <Column field="timeLogged" header="Time logged" style={{width: '25%'}}></Column>
-          <Column field="description" header="Description" style={{width: '50%'}}></Column>
-          <Column field="actions" header="Actions" style={{width: '25%'}}></Column>
+          <Column field="timeLogged" header="Time logged" style={{width: '20%'}}></Column>
+          <Column field="description" header="Description" style={{width: '60%'}}></Column>
+          <Column field="actions" header="Actions" style={{width: '20%'}}></Column>
         </DataTable>
       </div>
     </>
