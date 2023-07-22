@@ -1,0 +1,23 @@
+.c-button {
+  width: fit-content;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  color: white;
+  font-weight: 700;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 0.1rem;
+
+  img {
+    margin-right: 1rem;
+  }
+
+  &.is-primary {
+    background-color: $color-primary;
+  }
+
+  &.is-secondary {
+    background-color: $color-secondary;
+  }
+}
