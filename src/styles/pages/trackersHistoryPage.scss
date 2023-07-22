@@ -1,0 +1,70 @@
+.p-trackersHistory {
+  padding: 0 13.5rem;
+
+  &__title {
+    font-size: 2.4rem;
+  }
+
+  &__filter {
+    margin-top: 5.3rem;
+    padding: 2.2rem 5rem;
+    background-color: $color-tertiary;
+
+    label {
+      font-size: 1.4rem;
+
+      & + span > .p-inputtext {
+        background: white;
+        border: none;
+        padding: 1.2rem 2rem;
+        font-size: 1.8rem;
+      }
+    }
+
+    .p-calendar {
+      background: white;
+
+      .p-inputtext {
+        background: none;
+        border: none;
+        padding: 1.2rem 2rem;
+        font-size: 1.8rem;
+      }
+
+      .p-button {
+        .p-icon {
+          width: 1.8rem;
+          height: 1.8rem;
+        }
+
+        &.p-component.p-datepicker-trigger {
+          background: none;
+          border: none;
+
+          svg path {
+            fill: $color-dark-text;
+          }
+        }
+      }
+    }
+  }
+
+  .p-datatable {
+    font-size: 1.8rem;
+
+    td {
+      color: $color-input-text;
+      padding: 2.2rem 0 !important;
+    }
+
+    .p-trackersHistory__table_buttons button {
+      background-color: transparent;
+      outline: none;
+      border: none;
+
+      &:not(:last-child) {
+        margin-right: 1.5rem;
+      }
+    }
+  }
+}
