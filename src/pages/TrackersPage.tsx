@@ -4,65 +4,54 @@ import StopIcon from '../assets/StopIcon.svg';
 import Button from '../components/Button';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import PlayIconOrange from '../assets/PlayIconOrange.svg';
-import PauseIconOrange from '../assets/PauseIconOrange.svg';
-import StopIconBlue from '../assets/StopIconBlue.svg';
-import PencilIconBlue from '../assets/PencilIconBlue.svg';
-import TrashIconBlue from '../assets/TrashIconBlue.svg';
 import BaseLayout from '../layouts/BaseLayout';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Timer from '../components/Timer';
-import {TrackerData} from '../types';
+import {Tracker} from '../types';
 import {getTodaysDate, timeToSeconds} from '../utils';
+import {addDoc, collection} from 'firebase/firestore';
+import {db} from '../firebase';
+import {v4 as uuidv4} from 'uuid';
+import ActionButtons from '../components/ActionButtons';
+import {fetchTrackers} from '../services/trackerServices';
 
 const TrackersPage = () => {
+  const [trackersList, setTrackersList] = useState<Tracker[]>([]);
   const [activeTimerId, setActiveTimerId] = useState<string | null>();
   const {day, month, year} = getTodaysDate();
 
-  const handleStartTimer = (id: string) => {
-    setActiveTimerId(id);
+  useEffect(() => {
+    fetchTrackers(db)
+      .then((trackersArr) => {
+        setTrackersList(trackersArr);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [trackersList.length]);
+
+  const handleAddNewTracker = async () => {
+    await addDoc(collection(db, 'trackers'), {
+      id: uuidv4(),
+      timeLogged: '00:00:00',
+      description: 'New Tracaker',
+    });
+
+    fetchTrackers(db);
   };
 
-  const handlePauseTimer = () => {
-    setActiveTimerId(null);
-  };
-
-  const handleStopAndSaveTimer = () => {
-    setActiveTimerId(null);
-  };
-
-  const data = [
-    {id: '1', timeLogged: '01:23:33', description: 'Task 123 Jira lorem ipsum dolor sit amet'},
-    {id: '2', timeLogged: '01:23:33', description: 'Task 123 Jira Lorem Ipsum is simply dummy text of the'},
-    {id: '3', timeLogged: '01:23:33', description: 'Lorem Ipsum has been the i'},
-    {id: '4', timeLogged: '01:23:33', description: 'Task 123 Jira lorem ipsum dolor sit amet'},
-    {id: '5', timeLogged: '01:23:33', description: 'Task 123 Jira Lorem Ipsum is simply dummy text of the'},
-    {id: '6', timeLogged: '01:23:33', description: 'Lorem Ipsum has been the i'},
-  ];
-
-  const actionButtonsTemplate = (rowData: TrackerData) => (
-    <div className="p-trackers__table_buttons">
-      <button onClick={activeTimerId !== rowData.id ? () => handleStartTimer(rowData.id) : () => handlePauseTimer()}>
-        <img src={activeTimerId !== rowData.id ? PlayIconOrange : PauseIconOrange} alt="orange play/pause icon" />
-      </button>
-
-      <button onClick={() => handleStopAndSaveTimer()}>
-        <img src={StopIconBlue} alt="blue stop icon" />
-      </button>
-
-      <button>
-        <img src={PencilIconBlue} alt="blue pencil icon" />
-      </button>
-
-      <button>
-        <img src={TrashIconBlue} alt="blue trash icon" />
-      </button>
-    </div>
+  const actionButtons = ({id}: Tracker) => (
+    <ActionButtons
+      activeTimerId={activeTimerId}
+      rowDataId={id}
+      startOrPauseTimer={activeTimerId !== id ? () => setActiveTimerId(id) : () => setActiveTimerId(null)}
+      stopTimerAndSave={() => {}}
+      editTimer={() => {}}
+      deleteTimer={() => {}}
+    />
   );
 
-  const timeLoggedTemplate = (rowData: TrackerData) => (
-    <Timer id={rowData.id} timeLogged={timeToSeconds(rowData.timeLogged)} isActive={rowData.id === activeTimerId} />
-  );
+  const timer = ({id, timeLogged}: Tracker) => <Timer id={id} timeLogged={timeToSeconds(timeLogged)} isActive={id === activeTimerId} />;
 
   return (
     <BaseLayout>
@@ -73,14 +62,14 @@ const TrackersPage = () => {
         </div>
 
         <div className="p-trackers__buttons w-100 flex justify-content-end gap-4">
-          <Button icon={StopwatchIcon} label="Start new timer" variant="primary" />
+          <Button icon={StopwatchIcon} label="Start new timer" variant="primary" onClick={handleAddNewTracker} />
           <Button icon={StopIcon} label="Stop all" variant="secondary" />
         </div>
 
-        <DataTable className="w-100" value={data} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
-          <Column field="timeLogged" header="Time logged" style={{width: '20%'}} body={timeLoggedTemplate}></Column>
+        <DataTable className="w-100" value={trackersList} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
+          <Column field="timeLogged" header="Time logged" style={{width: '20%'}} body={timer}></Column>
           <Column field="description" header="Description" style={{width: '60%'}}></Column>
-          <Column header="Actions" style={{width: '20%'}} body={actionButtonsTemplate}></Column>
+          <Column header="Actions" style={{width: '20%'}} body={actionButtons}></Column>
         </DataTable>
       </div>
     </BaseLayout>

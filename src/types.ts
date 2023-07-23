@@ -1,4 +1,4 @@
-export interface TrackerData {
+export interface Tracker {
   id: string;
   timeLogged: string;
   description: string;
