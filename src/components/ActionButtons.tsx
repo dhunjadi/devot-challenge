@@ -10,7 +10,7 @@ interface ActionButtonsProps {
   startOrPauseTimer: (id: string) => void;
   stopTimerAndSave: () => void;
   editTimer: () => void;
-  deleteTimer: () => void;
+  deleteTimer: (id: string) => void;
 }
 
 const ActionButtons = ({activeTimerId, rowDataId, startOrPauseTimer, stopTimerAndSave, editTimer, deleteTimer}: ActionButtonsProps) => {
@@ -28,7 +28,7 @@ const ActionButtons = ({activeTimerId, rowDataId, startOrPauseTimer, stopTimerAn
         <img src={PencilIconBlue} alt="blue pencil icon" />
       </button>
 
-      <button onClick={deleteTimer}>
+      <button onClick={() => deleteTimer(rowDataId)}>
         <img src={TrashIconBlue} alt="blue trash icon" />
       </button>
     </div>

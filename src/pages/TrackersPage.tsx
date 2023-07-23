@@ -9,45 +9,72 @@ import {useEffect, useState} from 'react';
 import Timer from '../components/Timer';
 import {Tracker} from '../types';
 import {getTodaysDate, timeToSeconds} from '../utils';
-import {addDoc, collection} from 'firebase/firestore';
+import {addDoc, getDocs, deleteDoc, collection, doc, getDoc} from 'firebase/firestore';
 import {db} from '../firebase';
-import {v4 as uuidv4} from 'uuid';
 import ActionButtons from '../components/ActionButtons';
-import {fetchTrackers} from '../services/trackerServices';
 
 const TrackersPage = () => {
   const [trackersList, setTrackersList] = useState<Tracker[]>([]);
   const [activeTimerId, setActiveTimerId] = useState<string | null>();
   const {day, month, year} = getTodaysDate();
 
-  useEffect(() => {
-    fetchTrackers(db)
-      .then((trackersArr) => {
-        setTrackersList(trackersArr);
-      })
-      .catch((err) => {
-        console.log(err);
+  const fetchTrackers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'trackers'));
+      const trackersArr: Tracker[] = [];
+
+      querySnapshot.forEach((doc) => {
+        const trackerData: Tracker = {id: doc.id, ...doc.data()} as Tracker;
+        trackersArr.push(trackerData);
       });
-  }, [trackersList.length]);
 
-  const handleAddNewTracker = async () => {
-    await addDoc(collection(db, 'trackers'), {
-      id: uuidv4(),
-      timeLogged: '00:00:00',
-      description: 'New Tracaker',
-    });
-
-    fetchTrackers(db);
+      setTrackersList(trackersArr);
+      setActiveTimerId(null);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const actionButtons = ({id}: Tracker) => (
+  useEffect(() => {
+    fetchTrackers();
+  }, []);
+
+  const handleAddNewTracker = async () => {
+    try {
+      const newTrackerData = {
+        timeLogged: '00:00:00',
+        description: 'New Tracker',
+      };
+
+      const newTrackerRef = await addDoc(collection(db, 'trackers'), newTrackerData);
+      const newTrackerSnapshot = await getDoc(newTrackerRef);
+      const newTracker: Tracker = {id: newTrackerSnapshot.id, ...newTrackerSnapshot.data()} as Tracker;
+
+      setTrackersList((prev) => [...prev, newTracker]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDeleteTracker = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'trackers', id));
+      setTrackersList(trackersList.filter((tracker) => tracker.id !== id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const actionButtons = (rowData: Tracker) => (
     <ActionButtons
       activeTimerId={activeTimerId}
-      rowDataId={id}
-      startOrPauseTimer={activeTimerId !== id ? () => setActiveTimerId(id) : () => setActiveTimerId(null)}
-      stopTimerAndSave={() => {}}
+      rowDataId={rowData.id}
+      startOrPauseTimer={activeTimerId !== rowData.id ? () => setActiveTimerId(rowData.id) : () => setActiveTimerId(null)}
+      stopTimerAndSave={() => {
+        () => {};
+      }}
       editTimer={() => {}}
-      deleteTimer={() => {}}
+      deleteTimer={() => handleDeleteTracker(rowData.id)}
     />
   );
 
