@@ -3,8 +3,14 @@ import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {LoginForm, loginPageValidationSchema} from './LoginPageValidations';
 import RegisterIcon from '../../assets/RegisterIcon.svg';
+import {signInWithEmailAndPassword} from 'firebase/auth';
+import {auth} from '../../firebase';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 const LoginPage = () => {
+  const [error, setError] = useState<boolean>(false);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -13,28 +19,37 @@ const LoginPage = () => {
   } = useForm<LoginForm>({resolver: zodResolver(loginPageValidationSchema)});
   const watchFields = watch();
 
-  const isDisabled = !watchFields.username && !watchFields.password;
+  const isDisabled = !watchFields.email || !watchFields.password;
 
-  const onSubmit = ({username, password}: LoginForm) => {
-    console.log(username, password);
+  const onSubmit = ({email, password}: LoginForm) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        navigate('/trackers');
+      })
+      .catch(() => {
+        setError(true);
+      });
   };
 
   return (
     <>
       <Header />
-      <div className="p-login flex flex-column justify-content-center align-items-center h-screen">
+      <div className="p-login flex flex-column  align-items-center h-screen">
         <div className="p-login__form flex flex-column justify-content-center align-items-center">
-          <span className="font-bold mb-8">Login</span>
+          <div className="p-login__form_title font-bold mb-8">Login</div>
           <form className="w-full flex flex-column" onSubmit={handleSubmit(onSubmit)}>
-            <input className="w-full h-full" type="text" placeholder="Username" id="email" {...register('username')} autoFocus />
-            {errors.username && <span>{errors.username.message}</span>}
+            <input className="w-full h-full" type="text" placeholder="email" id="email" {...register('email')} autoFocus />
+            {errors.email && <div className="p-login__form_error mt-2">{errors.email.message}</div>}
 
             <input type="password" placeholder="Password" id="password" {...register('password')} />
-            {errors.password && <span>{errors.password?.message}</span>}
+            {errors.password && <div className="p-login__form_error mt-2">{errors.password?.message}</div>}
 
             <button className="mt-8 font-bold" type="submit" disabled={isDisabled}>
               Login
             </button>
+            {error && <div className="p-login__form_error mt-2">Wrong credentials</div>}
           </form>
         </div>
         <div className="p-login__register flex mt-6 pl-6">

@@ -1,11 +1,11 @@
 import {ZodType, z} from 'zod';
 
 export interface LoginForm {
-  username: string;
+  email: string;
   password: string;
 }
 
 export const loginPageValidationSchema: ZodType<LoginForm> = z.object({
-  username: z.string(),
-  password: z.string().min(8).max(20),
+  email: z.string().email(),
+  password: z.string().min(8, 'Passwords are at least 8 characters long').max(20),
 });
