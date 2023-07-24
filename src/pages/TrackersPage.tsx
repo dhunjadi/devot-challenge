@@ -8,7 +8,7 @@ import BaseLayout from '../layouts/BaseLayout';
 import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import Timer from '../components/Timer';
 import {Tracker} from '../types';
-import {getTodaysDate, timeToSeconds} from '../utils';
+import {getTodaysDate, secondsToTime, timeToSeconds} from '../utils';
 import {addDoc, getDocs, deleteDoc, collection, doc, getDoc, updateDoc} from 'firebase/firestore';
 import {db} from '../firebase';
 import ActionButtons from '../components/ActionButtons';
@@ -61,6 +61,23 @@ const TrackersPage = () => {
     }
   };
 
+  const handleStopTimer = async (id: string) => {
+    setIsTracking(false);
+    const selectedTrackerRef = doc(db, 'trackers', id);
+    await updateDoc(selectedTrackerRef, {
+      timeLogged: secondsToTime(elapsedTimes[id]),
+    });
+
+    const trackerToDelete = (await getDoc(selectedTrackerRef)).data();
+
+    await addDoc(collection(db, 'trackersHistory'), trackerToDelete);
+    await deleteDoc(doc(db, 'trackers', id));
+
+    setTimeout(() => {
+      fetchTrackers();
+    }, 1000);
+  };
+
   const handleUpdateElapsedTime = (id: string, elapsedTime: number) => {
     setElapsedTimes((prevElapsedTimes) => ({
       ...prevElapsedTimes,
@@ -94,9 +111,7 @@ const TrackersPage = () => {
       activeTimerId={activeTimerId}
       rowDataId={rowData.id}
       startOrPauseTimer={() => handleStartOrPauseTimer(rowData.id)}
-      stopTimerAndSave={() => {
-        () => {};
-      }}
+      stopTimerAndSave={() => handleStopTimer(rowData.id)}
       editTimer={() => handleEditingTracker(rowData.id)}
       deleteTimer={() => handleDeleteTracker(rowData.id)}
     />
