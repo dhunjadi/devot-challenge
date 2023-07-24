@@ -23,9 +23,7 @@ const LoginPage = () => {
 
   const onSubmit = ({email, password}: LoginForm) => {
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
+      .then(() => {
         navigate('/trackers');
       })
       .catch(() => {

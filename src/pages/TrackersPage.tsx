@@ -19,20 +19,16 @@ const TrackersPage = () => {
   const {day, month, year} = getTodaysDate();
 
   const fetchTrackers = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'trackers'));
-      const trackersArr: Tracker[] = [];
+    const querySnapshot = await getDocs(collection(db, 'trackers'));
+    const trackersArr: Tracker[] = [];
 
-      querySnapshot.forEach((doc) => {
-        const trackerData: Tracker = {id: doc.id, ...doc.data()} as Tracker;
-        trackersArr.push(trackerData);
-      });
+    querySnapshot.forEach((doc) => {
+      const trackerData: Tracker = {id: doc.id, ...doc.data()} as Tracker;
+      trackersArr.push(trackerData);
+    });
 
-      setTrackersList(trackersArr);
-      setActiveTimerId(null);
-    } catch (err) {
-      console.log(err);
-    }
+    setTrackersList(trackersArr);
+    setActiveTimerId(null);
   };
 
   useEffect(() => {
@@ -40,29 +36,21 @@ const TrackersPage = () => {
   }, []);
 
   const handleAddNewTracker = async () => {
-    try {
-      const newTrackerData = {
-        timeLogged: '00:00:00',
-        description: 'New Tracker',
-      };
+    const newTrackerData = {
+      timeLogged: '00:00:00',
+      description: 'New Tracker',
+    };
 
-      const newTrackerRef = await addDoc(collection(db, 'trackers'), newTrackerData);
-      const newTrackerSnapshot = await getDoc(newTrackerRef);
-      const newTracker: Tracker = {id: newTrackerSnapshot.id, ...newTrackerSnapshot.data()} as Tracker;
+    const newTrackerRef = await addDoc(collection(db, 'trackers'), newTrackerData);
+    const newTrackerSnapshot = await getDoc(newTrackerRef);
+    const newTracker: Tracker = {id: newTrackerSnapshot.id, ...newTrackerSnapshot.data()} as Tracker;
 
-      setTrackersList((prev) => [...prev, newTracker]);
-    } catch (err) {
-      console.log(err);
-    }
+    setTrackersList((prev) => [...prev, newTracker]);
   };
 
   const handleDeleteTracker = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, 'trackers', id));
-      setTrackersList(trackersList.filter((tracker) => tracker.id !== id));
-    } catch (err) {
-      console.log(err);
-    }
+    await deleteDoc(doc(db, 'trackers', id));
+    setTrackersList(trackersList.filter((tracker) => tracker.id !== id));
   };
 
   const actionButtons = (rowData: Tracker) => (

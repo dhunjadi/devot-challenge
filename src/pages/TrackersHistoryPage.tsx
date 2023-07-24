@@ -25,10 +25,30 @@ const TrackersHistoryPage = () => {
   );
 
   const data = [
-    {date: '01:23:33', description: 'Task 123 Jira lorem ipsum dolor sit amet', timeTracked: '05:02:23', actions: actionButtons},
-    {timeLogged: '01:23:33', description: 'Task 123 Jira Lorem Ipsum is simply dummy text of the', actions: actionButtons},
-    {timeLogged: '01:23:33', description: "Lorem Ipsum has been the industry's standard dummy text ever since", actions: actionButtons},
+    {
+      id: '1',
+      date: '15.08.2021.',
+      description: 'Task 123 Jira lorem ipsum dolor sit amet',
+      timeTracked: '05:02:23',
+      actions: actionButtons,
+    },
+    {
+      id: '2',
+      date: '15.08.2021.',
+      description: 'Task 123 Jira Lorem Ipsum is simply dummy text of the',
+      timeTracked: '01:46:29',
+      actions: actionButtons,
+    },
+    {
+      id: '3',
+      date: '15.08.2021.',
+      description: "Lorem Ipsum has been the industry's standard dummy text ever since",
+      timeTracked: '02:41:63',
+      actions: actionButtons,
+    },
   ];
+
+  const filteredData = data.filter((el) => el.description.toLowerCase().includes(inputText.toLowerCase()));
 
   return (
     <BaseLayout>
@@ -71,7 +91,7 @@ const TrackersHistoryPage = () => {
           </div>
         </div>
 
-        <DataTable className="w-full" value={data} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
+        <DataTable className="w-full" value={filteredData} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
           <Column field="date" header="Date" style={{width: '20%'}}></Column>
           <Column field="description" header="Description" style={{width: '50%'}}></Column>
           <Column field="timeTracked" header="Time Tracked" style={{width: '20%'}}></Column>
