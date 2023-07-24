@@ -1,12 +1,13 @@
 import Header from '../../components/Header';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {LoginForm, loginPageValidationSchema} from './LoginPageValidations';
 import RegisterIcon from '../../assets/RegisterIcon.svg';
 import {signInWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../../firebase';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {LoginForm} from '../../types';
+import {loginValidationSchema} from '../validations';
 
 const LoginPage = () => {
   const [error, setError] = useState<boolean>(false);
@@ -16,7 +17,7 @@ const LoginPage = () => {
     handleSubmit,
     watch,
     formState: {errors},
-  } = useForm<LoginForm>({resolver: zodResolver(loginPageValidationSchema)});
+  } = useForm<LoginForm>({resolver: zodResolver(loginValidationSchema)});
   const watchFields = watch();
 
   const isDisabled = !watchFields.email || !watchFields.password;
@@ -56,7 +57,7 @@ const LoginPage = () => {
           </div>
           <div className="p-login__register_text flex flex-column justify-content-center">
             <span>Need an account?</span>
-            <a href="/">Register here</a>
+            <a href="/register">Register here</a>
           </div>
         </div>
       </div>

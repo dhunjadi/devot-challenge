@@ -1,3 +1,12 @@
+export interface LoginForm {
+  email: string;
+  password: string;
+}
+
+export interface RegisterForm extends LoginForm {
+  confirmPassword: string;
+}
+
 export interface Tracker {
   id: string;
   timeLogged: string;

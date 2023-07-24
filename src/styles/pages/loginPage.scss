@@ -1,4 +1,6 @@
-.p-login {
+// Same styles for login and register page
+.p-login,
+.p-register {
   margin-top: 15rem;
   &__form {
     width: 40rem;
