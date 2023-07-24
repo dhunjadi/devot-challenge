@@ -11,6 +11,7 @@ export interface Tracker {
   id: string;
   timeLogged: string;
   description: string;
+  createdAt: string;
 }
 
 export interface TimerProps {

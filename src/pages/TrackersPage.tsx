@@ -14,7 +14,6 @@ import {db} from '../firebase';
 import ActionButtons from '../components/ActionButtons';
 
 const TrackersPage = () => {
-  const {day, month, year} = getTodaysDate();
   const [trackersList, setTrackersList] = useState<Tracker[]>([]);
   const [activeTrackerId, setActiveTimerId] = useState<string | null>();
   const [elapsedTimes, setElapsedTimes] = useState<{[key: string]: number}>({});
@@ -43,6 +42,7 @@ const TrackersPage = () => {
     const newTrackerData = {
       timeLogged: '00:00:00',
       description: 'New Tracker',
+      createdAt: getTodaysDate(),
     };
 
     const newTrackerRef = await addDoc(collection(db, 'trackers'), newTrackerData);
@@ -152,7 +152,7 @@ const TrackersPage = () => {
       <div className="p-trackers flex flex-column  h-screen">
         <div className="p-trackers__date w-full flex align-items-center justify-content-start ">
           <img src={CalendarIcon} alt="calendar icon" />
-          <span>Today {`(${day}.${month}.${year})`}</span>
+          <span>Today {`(${getTodaysDate()}.)`}</span>
         </div>
 
         <div className="p-trackers__buttons w-100 flex justify-content-end gap-4">

@@ -8,6 +8,7 @@ import {getDocs, collection, updateDoc, doc, deleteDoc} from 'firebase/firestore
 import {db} from '../firebase';
 import {Tracker} from '../types';
 import ActionButtons from '../components/ActionButtons';
+import {filterDataByDateRange, formatDateToDDMMYYYY} from '../utils';
 
 const TrackersHistoryPage = () => {
   const [trackersList, setTrackersList] = useState<Tracker[]>([]);
@@ -84,6 +85,8 @@ const TrackersHistoryPage = () => {
 
   const filteredData = trackersList.filter((el) => el.description.toLowerCase().includes(inputText.toLowerCase()));
 
+  const finalData = filterDataByDateRange(filteredData, formatDateToDDMMYYYY(startDate! as Date), formatDateToDDMMYYYY(endDate! as Date));
+
   return (
     <BaseLayout>
       <div className="p-trackersHistory flex flex-column h-screen">
@@ -125,8 +128,14 @@ const TrackersHistoryPage = () => {
           </div>
         </div>
 
-        <DataTable className="w-full" value={filteredData} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
-          <Column field="date" header="Date" style={{width: '20%'}} />
+        <DataTable
+          className="w-full"
+          value={startDate && endDate ? finalData : filteredData}
+          paginator
+          rows={5}
+          tableStyle={{minWidth: '50rem'}}
+        >
+          <Column field="createdAt" header="Date" style={{width: '20%'}} />
           <Column header="Description" style={{width: '50%'}} body={descriptionEditInput} />
           <Column field="timeLogged" header="Time Tracked" style={{width: '20%'}} />
           <Column header="Actions" style={{width: '10%'}} body={actionButtons} />
