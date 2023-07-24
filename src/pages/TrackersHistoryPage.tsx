@@ -1,54 +1,88 @@
-import PencilIconBlue from '../assets/PencilIconBlue.svg';
-import TrashIconBlue from '../assets/TrashIconBlue.svg';
-import {useState} from 'react';
+import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import {Calendar, CalendarChangeEvent} from 'primereact/calendar';
 import {InputText} from 'primereact/inputtext';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import BaseLayout from '../layouts/BaseLayout';
+import {getDocs, collection, updateDoc, doc, deleteDoc} from 'firebase/firestore';
+import {db} from '../firebase';
+import {Tracker} from '../types';
+import ActionButtons from '../components/ActionButtons';
 
 const TrackersHistoryPage = () => {
+  const [trackersList, setTrackersList] = useState<Tracker[]>([]);
+  const [activeTrackerId, setActiveTimerId] = useState<string | null>();
   const [startDate, setStartDate] = useState<string | Date | Date[] | null>();
   const [endDate, setEndDate] = useState<string | Date | Date[] | null>();
   const [inputText, setInputText] = useState<string>('');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [descriptionText, setDescriptionText] = useState<string>('');
 
-  const actionButtons = (
-    <div className="p-trackersHistory__table_buttons">
-      <button>
-        <img src={PencilIconBlue} alt="blue pencil icon" />
-      </button>
+  useEffect(() => {
+    fetchTrackers();
+  }, []);
 
-      <button>
-        <img src={TrashIconBlue} alt="blue trash icon" />
-      </button>
-    </div>
+  const fetchTrackers = async () => {
+    const querySnapshot = await getDocs(collection(db, 'trackersHistory'));
+    const trackersArr: Tracker[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const trackerData: Tracker = {id: doc.id, ...doc.data()} as Tracker;
+      trackersArr.push(trackerData);
+    });
+
+    setTrackersList(trackersArr);
+    setActiveTimerId(null);
+  };
+
+  const handleEditingTracker = (id: string) => {
+    setActiveTimerId(id);
+    setIsEditing((prev) => !prev);
+  };
+
+  const handleEditTrackerSubmit = async () => {
+    const editingTrackerRef = doc(db, 'trackersHistory', activeTrackerId!);
+    await updateDoc(editingTrackerRef, {
+      description: descriptionText,
+    });
+    setIsEditing(false);
+    setTimeout(() => {
+      fetchTrackers();
+    }, 1000);
+  };
+
+  const handleDeleteTracker = async (id: string) => {
+    await deleteDoc(doc(db, 'trackersHistory', id));
+    setTrackersList(trackersList.filter((tracker) => tracker.id !== id));
+  };
+
+  const actionButtons = (rowData: Tracker) => (
+    <ActionButtons
+      activeTrackerId={activeTrackerId}
+      rowDataId={rowData.id}
+      editTimer={() => handleEditingTracker(rowData.id)}
+      deleteTimer={() => handleDeleteTracker(rowData.id)}
+    />
   );
 
-  const data = [
-    {
-      id: '1',
-      date: '15.08.2021.',
-      description: 'Task 123 Jira lorem ipsum dolor sit amet',
-      timeTracked: '05:02:23',
-      actions: actionButtons,
-    },
-    {
-      id: '2',
-      date: '15.08.2021.',
-      description: 'Task 123 Jira Lorem Ipsum is simply dummy text of the',
-      timeTracked: '01:46:29',
-      actions: actionButtons,
-    },
-    {
-      id: '3',
-      date: '15.08.2021.',
-      description: "Lorem Ipsum has been the industry's standard dummy text ever since",
-      timeTracked: '02:41:63',
-      actions: actionButtons,
-    },
-  ];
+  const descriptionEditInput = (rowData: Tracker) => {
+    if (activeTrackerId === rowData.id && isEditing) {
+      return (
+        <form
+          onSubmit={(e: FormEvent) => {
+            e.preventDefault();
+            handleEditTrackerSubmit();
+          }}
+        >
+          <input type="text" value={descriptionText} onChange={(e: ChangeEvent<HTMLInputElement>) => setDescriptionText(e.target.value)} />
+        </form>
+      );
+    }
 
-  const filteredData = data.filter((el) => el.description.toLowerCase().includes(inputText.toLowerCase()));
+    return rowData.description;
+  };
+
+  const filteredData = trackersList.filter((el) => el.description.toLowerCase().includes(inputText.toLowerCase()));
 
   return (
     <BaseLayout>
@@ -92,10 +126,10 @@ const TrackersHistoryPage = () => {
         </div>
 
         <DataTable className="w-full" value={filteredData} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
-          <Column field="date" header="Date" style={{width: '20%'}}></Column>
-          <Column field="description" header="Description" style={{width: '50%'}}></Column>
-          <Column field="timeTracked" header="Time Tracked" style={{width: '20%'}}></Column>
-          <Column field="actions" header="Actions" style={{width: '10%'}}></Column>
+          <Column field="date" header="Date" style={{width: '20%'}} />
+          <Column header="Description" style={{width: '50%'}} body={descriptionEditInput} />
+          <Column field="timeLogged" header="Time Tracked" style={{width: '20%'}} />
+          <Column header="Actions" style={{width: '10%'}} body={actionButtons} />
         </DataTable>
       </div>
     </BaseLayout>

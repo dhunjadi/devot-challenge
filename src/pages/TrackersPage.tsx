@@ -1,3 +1,4 @@
+import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import CalendarIcon from '../assets/CalendarIcon.svg';
 import StopwatchIcon from '../assets/StopwatchIcon.svg';
 import StopIcon from '../assets/StopIcon.svg';
@@ -5,7 +6,6 @@ import Button from '../components/Button';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import BaseLayout from '../layouts/BaseLayout';
-import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import Timer from '../components/Timer';
 import {Tracker} from '../types';
 import {getTodaysDate, secondsToTime, timeToSeconds} from '../utils';
@@ -16,7 +16,7 @@ import ActionButtons from '../components/ActionButtons';
 const TrackersPage = () => {
   const {day, month, year} = getTodaysDate();
   const [trackersList, setTrackersList] = useState<Tracker[]>([]);
-  const [activeTimerId, setActiveTimerId] = useState<string | null>();
+  const [activeTrackerId, setActiveTimerId] = useState<string | null>();
   const [elapsedTimes, setElapsedTimes] = useState<{[key: string]: number}>({});
   const [isTracking, setIsTracking] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -56,7 +56,7 @@ const TrackersPage = () => {
     setActiveTimerId((prevId) => (prevId === id && isTracking ? null : id));
     setIsTracking(true);
 
-    if (activeTimerId === id && isTracking) {
+    if (activeTrackerId === id && isTracking) {
       setIsTracking(false);
     }
   };
@@ -91,7 +91,7 @@ const TrackersPage = () => {
   };
 
   const handleEditTrackerSubmit = async () => {
-    const editingTrackerRef = doc(db, 'trackers', activeTimerId!);
+    const editingTrackerRef = doc(db, 'trackers', activeTrackerId!);
     await updateDoc(editingTrackerRef, {
       description: descriptionText,
     });
@@ -108,7 +108,8 @@ const TrackersPage = () => {
 
   const actionButtons = (rowData: Tracker) => (
     <ActionButtons
-      activeTimerId={activeTimerId}
+      showStartAndStop
+      activeTrackerId={activeTrackerId}
       rowDataId={rowData.id}
       startOrPauseTimer={() => handleStartOrPauseTimer(rowData.id)}
       stopTimerAndSave={() => handleStopTimer(rowData.id)}
@@ -121,7 +122,7 @@ const TrackersPage = () => {
     return (
       <Timer
         id={rowData.id}
-        isActive={rowData.id === activeTimerId && isTracking}
+        isActive={rowData.id === activeTrackerId && isTracking}
         onToggleTimer={handleStartOrPauseTimer}
         elapsedTime={elapsedTimes[rowData.id] || timeToSeconds(rowData.timeLogged)}
         onUpdateElapsedTime={handleUpdateElapsedTime}
@@ -129,8 +130,8 @@ const TrackersPage = () => {
     );
   };
 
-  const descInput = (rowData: Tracker) => {
-    if (activeTimerId === rowData.id && isEditing) {
+  const descriptionEditInput = (rowData: Tracker) => {
+    if (activeTrackerId === rowData.id && isEditing) {
       return (
         <form
           onSubmit={(e: FormEvent) => {
@@ -161,7 +162,7 @@ const TrackersPage = () => {
 
         <DataTable className="w-100" value={trackersList} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
           <Column field="timeLogged" header="Time logged" style={{width: '20%'}} body={timer} />
-          <Column header="Description" style={{width: '60%'}} body={descInput} />
+          <Column header="Description" style={{width: '60%'}} body={descriptionEditInput} />
           <Column header="Actions" style={{width: '20%'}} body={actionButtons} />
         </DataTable>
       </div>
