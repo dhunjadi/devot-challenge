@@ -1,14 +1,12 @@
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {TimerProps} from '../types';
 
-const Timer = ({isActive, timeLogged}: TimerProps) => {
-  const [elapsedTime, setElapsedTime] = useState(timeLogged || 0);
-
+const Timer = ({id, isActive, elapsedTime, onUpdateElapsedTime}: TimerProps) => {
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (isActive) {
       interval = setInterval(() => {
-        setElapsedTime((prevTime) => prevTime + 1);
+        onUpdateElapsedTime(id, elapsedTime + 1); // Notify the parent component to update elapsedTime
       }, 1000);
     } else {
       clearInterval(interval!);
@@ -19,7 +17,7 @@ const Timer = ({isActive, timeLogged}: TimerProps) => {
         clearInterval(interval);
       }
     };
-  }, [isActive]);
+  }, [id, isActive, elapsedTime, onUpdateElapsedTime]);
 
   const formatTime = (timeInSeconds: number) => {
     const hours = Math.floor(timeInSeconds / 3600);

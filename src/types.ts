@@ -16,7 +16,9 @@ export interface Tracker {
 export interface TimerProps {
   id: string;
   isActive: boolean;
-  timeLogged: number;
+  onToggleTimer: (id: string) => void;
+  onUpdateElapsedTime: (id: string, elapsedTime: number) => void;
+  elapsedTime: number;
 }
 
 export interface TodaysDate {

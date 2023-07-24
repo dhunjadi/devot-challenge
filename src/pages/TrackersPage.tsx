@@ -14,12 +14,17 @@ import {db} from '../firebase';
 import ActionButtons from '../components/ActionButtons';
 
 const TrackersPage = () => {
+  const {day, month, year} = getTodaysDate();
   const [trackersList, setTrackersList] = useState<Tracker[]>([]);
   const [activeTimerId, setActiveTimerId] = useState<string | null>();
+  const [elapsedTimes, setElapsedTimes] = useState<{[key: string]: number}>({});
+  const [isTracking, setIsTracking] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [descriptionText, setDescriptionText] = useState<string>('');
 
-  const {day, month, year} = getTodaysDate();
+  useEffect(() => {
+    fetchTrackers();
+  }, []);
 
   const fetchTrackers = async () => {
     const querySnapshot = await getDocs(collection(db, 'trackers'));
@@ -34,10 +39,6 @@ const TrackersPage = () => {
     setActiveTimerId(null);
   };
 
-  useEffect(() => {
-    fetchTrackers();
-  }, []);
-
   const handleAddNewTracker = async () => {
     const newTrackerData = {
       timeLogged: '00:00:00',
@@ -51,14 +52,25 @@ const TrackersPage = () => {
     setTrackersList((prev) => [...prev, newTracker]);
   };
 
-  const handleDeleteTracker = async (id: string) => {
-    await deleteDoc(doc(db, 'trackers', id));
-    setTrackersList(trackersList.filter((tracker) => tracker.id !== id));
+  const handleStartOrPauseTimer = (id: string) => {
+    setActiveTimerId((prevId) => (prevId === id && isTracking ? null : id));
+    setIsTracking(true);
+
+    if (activeTimerId === id && isTracking) {
+      setIsTracking(false);
+    }
+  };
+
+  const handleUpdateElapsedTime = (id: string, elapsedTime: number) => {
+    setElapsedTimes((prevElapsedTimes) => ({
+      ...prevElapsedTimes,
+      [id]: elapsedTime,
+    }));
   };
 
   const handleEditingTracker = (id: string) => {
     setActiveTimerId(id);
-    setIsEditing(true);
+    setIsEditing((prev) => !prev);
   };
 
   const handleEditTrackerSubmit = async () => {
@@ -72,11 +84,16 @@ const TrackersPage = () => {
     }, 1000);
   };
 
+  const handleDeleteTracker = async (id: string) => {
+    await deleteDoc(doc(db, 'trackers', id));
+    setTrackersList(trackersList.filter((tracker) => tracker.id !== id));
+  };
+
   const actionButtons = (rowData: Tracker) => (
     <ActionButtons
       activeTimerId={activeTimerId}
       rowDataId={rowData.id}
-      startOrPauseTimer={activeTimerId === rowData.id ? () => setActiveTimerId(null) : () => setActiveTimerId(rowData.id)}
+      startOrPauseTimer={() => handleStartOrPauseTimer(rowData.id)}
       stopTimerAndSave={() => {
         () => {};
       }}
@@ -85,8 +102,16 @@ const TrackersPage = () => {
     />
   );
 
-  const timer = ({id, timeLogged}: Tracker) => {
-    return <Timer id={id} timeLogged={timeToSeconds(timeLogged)} isActive={id === activeTimerId} />;
+  const timer = (rowData: Tracker) => {
+    return (
+      <Timer
+        id={rowData.id}
+        isActive={rowData.id === activeTimerId && isTracking}
+        onToggleTimer={handleStartOrPauseTimer}
+        elapsedTime={elapsedTimes[rowData.id] || timeToSeconds(rowData.timeLogged)}
+        onUpdateElapsedTime={handleUpdateElapsedTime}
+      />
+    );
   };
 
   const descInput = (rowData: Tracker) => {
