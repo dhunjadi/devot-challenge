@@ -5,17 +5,20 @@ import Button from '../components/Button';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import BaseLayout from '../layouts/BaseLayout';
-import {useEffect, useState} from 'react';
+import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import Timer from '../components/Timer';
 import {Tracker} from '../types';
 import {getTodaysDate, timeToSeconds} from '../utils';
-import {addDoc, getDocs, deleteDoc, collection, doc, getDoc} from 'firebase/firestore';
+import {addDoc, getDocs, deleteDoc, collection, doc, getDoc, updateDoc} from 'firebase/firestore';
 import {db} from '../firebase';
 import ActionButtons from '../components/ActionButtons';
 
 const TrackersPage = () => {
   const [trackersList, setTrackersList] = useState<Tracker[]>([]);
   const [activeTimerId, setActiveTimerId] = useState<string | null>();
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [descriptionText, setDescriptionText] = useState<string>('');
+
   const {day, month, year} = getTodaysDate();
 
   const fetchTrackers = async () => {
@@ -53,20 +56,55 @@ const TrackersPage = () => {
     setTrackersList(trackersList.filter((tracker) => tracker.id !== id));
   };
 
+  const handleEditingTracker = (id: string) => {
+    setActiveTimerId(id);
+    setIsEditing(true);
+  };
+
+  const handleEditTrackerSubmit = async () => {
+    const editingTrackerRef = doc(db, 'trackers', activeTimerId!);
+    await updateDoc(editingTrackerRef, {
+      description: descriptionText,
+    });
+    setIsEditing(false);
+    setTimeout(() => {
+      fetchTrackers();
+    }, 1000);
+  };
+
   const actionButtons = (rowData: Tracker) => (
     <ActionButtons
       activeTimerId={activeTimerId}
       rowDataId={rowData.id}
-      startOrPauseTimer={activeTimerId !== rowData.id ? () => setActiveTimerId(rowData.id) : () => setActiveTimerId(null)}
+      startOrPauseTimer={activeTimerId === rowData.id ? () => setActiveTimerId(null) : () => setActiveTimerId(rowData.id)}
       stopTimerAndSave={() => {
         () => {};
       }}
-      editTimer={() => {}}
+      editTimer={() => handleEditingTracker(rowData.id)}
       deleteTimer={() => handleDeleteTracker(rowData.id)}
     />
   );
 
-  const timer = ({id, timeLogged}: Tracker) => <Timer id={id} timeLogged={timeToSeconds(timeLogged)} isActive={id === activeTimerId} />;
+  const timer = ({id, timeLogged}: Tracker) => {
+    return <Timer id={id} timeLogged={timeToSeconds(timeLogged)} isActive={id === activeTimerId} />;
+  };
+
+  const descInput = (rowData: Tracker) => {
+    if (activeTimerId === rowData.id && isEditing) {
+      return (
+        <form
+          onSubmit={(e: FormEvent) => {
+            e.preventDefault();
+            handleEditTrackerSubmit();
+          }}
+        >
+          <input type="text" value={descriptionText} onChange={(e: ChangeEvent<HTMLInputElement>) => setDescriptionText(e.target.value)} />
+        </form>
+      );
+    }
+
+    return rowData.description;
+  };
 
   return (
     <BaseLayout>
@@ -82,9 +120,9 @@ const TrackersPage = () => {
         </div>
 
         <DataTable className="w-100" value={trackersList} paginator rows={5} tableStyle={{minWidth: '50rem'}}>
-          <Column field="timeLogged" header="Time logged" style={{width: '20%'}} body={timer}></Column>
-          <Column field="description" header="Description" style={{width: '60%'}}></Column>
-          <Column header="Actions" style={{width: '20%'}} body={actionButtons}></Column>
+          <Column field="timeLogged" header="Time logged" style={{width: '20%'}} body={timer} />
+          <Column header="Description" style={{width: '60%'}} body={descInput} />
+          <Column header="Actions" style={{width: '20%'}} body={actionButtons} />
         </DataTable>
       </div>
     </BaseLayout>
