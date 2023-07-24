@@ -1,0 +1,9 @@
+.c-actionButtons button {
+  background-color: transparent;
+  outline: none;
+  border: none;
+
+  &:not(:last-child) {
+    margin-right: 1.5rem;
+  }
+}

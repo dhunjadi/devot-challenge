@@ -24,7 +24,7 @@ const ActionButtons = ({
   showStartAndStop,
 }: ActionButtonsProps) => {
   return (
-    <div className="p-trackers__table_buttons">
+    <div className="c-actionButtons">
       {showStartAndStop && (
         <>
           <button onClick={() => startOrPauseTimer(rowDataId)}>

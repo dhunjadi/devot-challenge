@@ -23,16 +23,6 @@
       color: $color-dark-text;
       padding: 2.2rem 3rem !important;
     }
-
-    .p-trackers__table_buttons button {
-      background-color: transparent;
-      outline: none;
-      border: none;
-
-      &:not(:last-child) {
-        margin-right: 1.5rem;
-      }
-    }
   }
 
   .p-paginator .p-paginator-pages .p-paginator-element {
