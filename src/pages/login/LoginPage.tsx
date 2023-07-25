@@ -11,6 +11,7 @@ import {loginValidationSchema} from '../validations';
 
 const LoginPage = () => {
   const [error, setError] = useState<boolean>(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
     register,
@@ -42,8 +43,15 @@ const LoginPage = () => {
             <input className="w-full h-full" type="text" placeholder="email" id="email" {...register('email')} autoFocus />
             {errors.email && <div className="p-login__form_error mt-2">{errors.email.message}</div>}
 
-            <input type="password" placeholder="Password" id="password" {...register('password')} />
-            {errors.password && <div className="p-login__form_error mt-2">{errors.password?.message}</div>}
+            <div className="p-login__form_password">
+              <input type={isPasswordVisible ? 'text' : 'password'} placeholder="Password" id="password" {...register('password')} />
+              <i
+                className={isPasswordVisible ? 'pi pi-eye-slash' : 'pi pi-eye'}
+                style={{color: 'slateblue', fontSize: '1.5rem'}}
+                onClick={() => setIsPasswordVisible((prev) => !prev)}
+              />
+              {errors.password && <div className="p-login__form_error mt-2">{errors.password?.message}</div>}
+            </div>
 
             <button className="mt-8 font-bold" type="submit" disabled={isDisabled}>
               Login

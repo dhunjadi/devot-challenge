@@ -12,6 +12,7 @@ import {getTodaysDate, secondsToTime, timeToSeconds} from '../utils';
 import {addDoc, getDocs, deleteDoc, collection, doc, getDoc, updateDoc, writeBatch} from 'firebase/firestore';
 import {db} from '../firebase';
 import ActionButtons from '../components/ActionButtons';
+import {InputText} from 'primereact/inputtext';
 
 const TrackersPage = () => {
   const [trackersList, setTrackersList] = useState<Tracker[]>([]);
@@ -164,7 +165,7 @@ const TrackersPage = () => {
             handleEditTrackerSubmit();
           }}
         >
-          <input type="text" value={descriptionText} onChange={(e: ChangeEvent<HTMLInputElement>) => setDescriptionText(e.target.value)} />
+          <InputText value={descriptionText} onChange={(e: ChangeEvent<HTMLInputElement>) => setDescriptionText(e.target.value)} />
         </form>
       );
     }
