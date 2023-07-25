@@ -9,7 +9,7 @@ import BaseLayout from '../layouts/BaseLayout';
 import Timer from '../components/Timer';
 import {Tracker} from '../types';
 import {getTodaysDate, secondsToTime, timeToSeconds} from '../utils';
-import {addDoc, getDocs, deleteDoc, collection, doc, getDoc, updateDoc} from 'firebase/firestore';
+import {addDoc, getDocs, deleteDoc, collection, doc, getDoc, updateDoc, writeBatch} from 'firebase/firestore';
 import {db} from '../firebase';
 import ActionButtons from '../components/ActionButtons';
 
@@ -73,9 +73,34 @@ const TrackersPage = () => {
     await addDoc(collection(db, 'trackersHistory'), trackerToDelete);
     await deleteDoc(doc(db, 'trackers', id));
 
-    setTimeout(() => {
-      fetchTrackers();
-    }, 1000);
+    fetchTrackers();
+  };
+
+  const handleStopAllTimers = async () => {
+    setIsTracking(false);
+
+    const querySnapshot = await getDocs(collection(db, 'trackers'));
+
+    const batch = writeBatch(db);
+
+    for (const docSnapshot of querySnapshot.docs) {
+      const trackerRef = doc(db, 'trackers', docSnapshot.id);
+      const trackerData = docSnapshot.data();
+
+      const elapsedSeconds = elapsedTimes[docSnapshot.id];
+      const formattedTime = secondsToTime(elapsedSeconds);
+      batch.update(trackerRef, {timeLogged: formattedTime});
+
+      const trackersHistoryCollectionRef = collection(db, 'trackersHistory');
+      const trackerHistoryDocRef = doc(trackersHistoryCollectionRef, docSnapshot.id);
+      batch.set(trackerHistoryDocRef, {...trackerData, timeLogged: formattedTime});
+
+      batch.delete(trackerRef);
+    }
+
+    await batch.commit();
+
+    fetchTrackers();
   };
 
   const handleUpdateElapsedTime = (id: string, elapsedTime: number) => {
@@ -96,9 +121,9 @@ const TrackersPage = () => {
       description: descriptionText,
     });
     setIsEditing(false);
-    setTimeout(() => {
-      fetchTrackers();
-    }, 1000);
+    setDescriptionText('');
+
+    fetchTrackers();
   };
 
   const handleDeleteTracker = async (id: string) => {
@@ -157,7 +182,7 @@ const TrackersPage = () => {
 
         <div className="p-trackers__buttons w-100 flex justify-content-end gap-4">
           <Button icon={StopwatchIcon} label="Start new timer" variant="primary" onClick={handleAddNewTracker} />
-          <Button icon={StopIcon} label="Stop all" variant="secondary" />
+          <Button icon={StopIcon} label="Stop all" variant="secondary" onClick={() => handleStopAllTimers()} />
         </div>
 
         <DataTable className="w-100" value={trackersList} paginator rows={5} tableStyle={{minWidth: '50rem'}}>

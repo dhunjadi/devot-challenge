@@ -27,7 +27,12 @@
 
     a {
       text-decoration: none;
-      color: white;
+      color: #c4c5d7;
+
+      &:hover,
+      &.active {
+        color: white;
+      }
     }
 
     &_trackers {

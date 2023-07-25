@@ -8,7 +8,7 @@ interface ButtonProps extends HTMLProps<HTMLButtonElement> {
 }
 const Button = ({label, icon, type = 'button', variant, ...rest}: ButtonProps) => {
   return (
-    <button className={`c-button ${variant === 'primary' ? 'is-primary' : 'is-secondary'}`} type={type} {...rest}>
+    <button className={`c-button ${variant === 'primary' ? 'is-primary' : 'is-secondary'} cursor-pointer`} type={type} {...rest}>
       <img src={icon} alt="button icon" />
       {label}
     </button>

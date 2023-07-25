@@ -11,10 +11,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/trackers">
-            <Route index element={<TrackersPage />} />
-            <Route path="history" element={<TrackersHistoryPage />} />
-          </Route>
+          <Route path="/trackers" element={<TrackersPage />} />
+          <Route path="/history" element={<TrackersHistoryPage />} />
         </Routes>
       </Router>
     </div>
